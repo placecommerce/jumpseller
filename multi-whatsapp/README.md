@@ -6,7 +6,7 @@ Esta documentación explica cómo implementar y configurar **Multi WhatsApp** en
 
 ---
 
-## \*\*1. Configuración en \*\*\`\`
+## 1. Configuración en `options.json`
 
 En el archivo `options.json`, agregamos las opciones para definir los asesores y sus números de contacto.
 
@@ -108,7 +108,7 @@ Este código genera dinámicamente los botones de WhatsApp para los asesores con
 
 ## **3. ¿Cómo agregar otro asesor?**
 
-### ✅ \*\*Paso 1: Agregar en \*\*\`\`
+### ✅ Paso 1: Agregar en `options.json`
 
 ```json
 "multi_whatsapp_asesor_4": {
@@ -129,7 +129,7 @@ Este código genera dinámicamente los botones de WhatsApp para los asesores con
 {% assign asesores = "1,2,3,4" | split: "," %}
 ```
 
-**¡Listo!** 🎉 El nuevo asesor se generará automáticamente en la web.
+**¡Listo!** 🎉 
 
 ---
 
@@ -140,10 +140,3 @@ Este código genera dinámicamente los botones de WhatsApp para los asesores con
 ✅ **Mayor flexibilidad:** Se pueden agregar más asesores sin modificar el código base.
 
 ---
-
-## **Conclusión**
-
-Este documento detalla cómo configurar Multi WhatsApp en un tema de Jumpseller, permitiendo la gestión de asesores desde el editor del tema. Si necesitas agregar más asesores, solo es necesario actualizar `options.json` y la lista de asesores en Liquid.
-
-📌 **¿Dudas o mejoras?** ¡Siempre podemos optimizar más! 🚀
-
