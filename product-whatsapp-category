@@ -1,0 +1,165 @@
+# Implementación de Botones de Contacto por Categoría en Jumpseller
+
+## Introducción
+Este documento describe cómo implementar botones de contacto por WhatsApp y teléfono en Jumpseller, basándose en la categoría de los productos. El código permite asignar números específicos a cada categoría y una categoría prioritaria que tendrá su propio número y texto de botón personalizado.
+
+## Funcionalidad
+- **Categoría Prioritaria:** Si un producto pertenece a esta categoría, se mostrará su contacto específico.
+- **Categorías Generales:** Si el producto no tiene categoría prioritaria, se mostrará el contacto de la primera categoría coincidente.
+- **Escalabilidad:** Se pueden agregar más categorías fácilmente.
+- **Flexibilidad:** Se puede eliminar la categoría prioritaria si no es necesaria.
+
+---
+
+## Configuración JSON
+El siguiente código define las opciones configurables en Jumpseller para asignar números de contacto a cada categoría.
+
+```json
+{
+  "WhatsApp_Categorias": {
+    "icon": "chat",
+    "options": {
+      "product_whatsapp_priority_category": {
+        "name": "Categoría Prioritaria",
+        "type": "category",
+        "default": "SOLICITAR PRESUPUESTO",
+        "value_type": "permalink"
+      },
+      "product_whatsapp_priority_number": {
+        "name": "Número WhatsApp Categoría Prioritaria",
+        "type": "input",
+        "default": "573104265599"
+      },
+      "product_phone_priority_number": {
+        "name": "Número Teléfono Categoría Prioritaria",
+        "type": "input",
+        "default": "3104265599"
+      },
+      "product_whatsapp_priority_text": {
+        "name": "Texto del botón para Categoría Prioritaria",
+        "type": "input",
+        "default": "Solicitar presupuesto por WhatsApp"
+      },
+      "product_whatsapp_category_1": {
+        "name": "Categoría 1",
+        "type": "category",
+        "default": "Impresoras 3D",
+        "value_type": "permalink"
+      },
+      "product_whatsapp_number_1": {
+        "name": "Número WhatsApp Categoría 1",
+        "type": "input",
+        "default": "573028301499"
+      },
+      "product_phone_number_1": {
+        "name": "Número Teléfono Categoría 1",
+        "type": "input",
+        "default": "3028301499"
+      },
+      "product_whatsapp_category_2": {
+        "name": "Categoría 2",
+        "type": "category",
+        "default": "Escáner 3D",
+        "value_type": "permalink"
+      },
+      "product_whatsapp_number_2": {
+        "name": "Número WhatsApp Categoría 2",
+        "type": "input",
+        "default": "573239815754"
+      },
+      "product_phone_number_2": {
+        "name": "Número Teléfono Categoría 2",
+        "type": "input",
+        "default": "3239815754"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Código Liquid
+Este código se encarga de mostrar los botones de contacto en función de la categoría del producto.
+
+```liquid
+{% assign priority_category = options.product_whatsapp_priority_category %}
+{% assign priority_whatsapp = options.product_whatsapp_priority_number %}
+{% assign priority_phone = options.product_phone_priority_number %}
+{% assign priority_text = options.product_whatsapp_priority_text %}
+
+{% assign whatsapp_data = "" %}
+{% assign button_text = "Comprar por WhatsApp" %}
+
+{% for product_category in product.categories %}
+  {% assign product_category_permalink = product_category.url | split: "/" | last %}
+  
+  {% if product_category_permalink == priority_category %}
+    {% assign whatsapp_data = priority_whatsapp | append: "," | append: priority_phone %}
+    {% assign button_text = priority_text %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% if whatsapp_data == "" %}
+  {% for i in (1..3) %}
+    {% assign category_key = "product_whatsapp_category_" | append: i %}
+    {% assign whatsapp_key = "product_whatsapp_number_" | append: i %}
+    {% assign phone_key = "product_phone_number_" | append: i %}
+    
+    {% assign category_permalink = options[category_key] %}
+    {% assign whatsapp_number = options[whatsapp_key] %}
+    {% assign phone_number = options[phone_key] %}
+    
+    {% for product_category in product.categories %}
+      {% assign product_category_permalink = product_category.url | split: "/" | last %}
+      
+      {% if product_category_permalink == category_permalink %}
+        {% assign whatsapp_data = whatsapp_number | append: "," | append: phone_number %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+    {% if whatsapp_data != "" %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if whatsapp_data != "" %}
+  {% assign whatsapp_details = whatsapp_data | split: "," %}
+  <div class="product-btn-comprar-what">
+    <a href="https://api.whatsapp.com/send?phone={{ whatsapp_details[0] }}&text={% t 'Hola, me gustaría comprar el siguiente producto: ' %} {{ product.name }} | {{ store.base_url }}{{ product.url }}" target="_blank">
+      {{ button_text }} <i class="fab fa-whatsapp"></i>
+    </a>
+  </div>
+  <div class="product-btn-comprar-tel">
+    <a href="tel:{{ whatsapp_details[1] }}">
+      <i class="fas fa-phone"></i> Llamar {{ whatsapp_details[1] }}
+    </a>
+  </div>
+{% endif %}
+```
+
+---
+
+## Explicación del Código Liquid
+- **Asignación de variables:** Se extraen las opciones configuradas en `options`.
+- **Verificación de la categoría prioritaria:** Si el producto pertenece a la categoría prioritaria, se usan sus datos.
+- **Búsqueda en otras categorías:** Si no hay coincidencia con la prioritaria, se busca la primera categoría coincidente en el bucle.
+- **Generación de botones:** Si se encuentra una coincidencia, se generan los botones de contacto.
+
+---
+
+## Modificaciones y Personalización
+### **Agregar Más Categorías**
+- Agregar más entradas en el JSON.
+- Aumentar el rango del bucle `{% for i in (1..N) %}` en el código Liquid.
+
+### **Eliminar la Categoría Prioritaria**
+- Remover las claves relacionadas en el JSON.
+- Eliminar la lógica que busca la categoría prioritaria en el código Liquid.
+
+---
+
+Con esta documentación, cualquier desarrollador con conocimientos básicos en Liquid podrá implementar y personalizar esta funcionalidad en su tienda Jumpseller. 🚀
+
