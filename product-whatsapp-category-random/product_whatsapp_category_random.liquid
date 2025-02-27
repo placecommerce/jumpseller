@@ -1,6 +1,7 @@
 {% assign whatsapp_data = "" %}
 {% assign button_text = "Comprar por WhatsApp" %}
 {% assign category_matched = false %}
+{% assign tracking_class = "category-default" %}
 
 {% for product_category in product.categories %}
   {% assign category_permalink = product_category.permalink %}
@@ -9,6 +10,7 @@
     {% assign whatsapp_data = options.product_whatsapp_priority_number | append: "," | append: options.product_phone_priority_number %}
     {% assign button_text = options.product_whatsapp_priority_text %}
     {% assign category_matched = true %}
+    {% assign tracking_class = "category-prioritaria" %}
     {% break %}
   {% endif %}
 
@@ -16,6 +18,7 @@
     {% assign fallback_whatsapp = options.product_whatsapp_commercial_number_1 %}
     {% assign fallback_phone = options.product_phone_commercial_number_1 %}
     {% assign category_matched = true %}
+    {% assign tracking_class = "category-comercial" %}
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         try {
@@ -29,11 +32,15 @@
 
           var whatsappNumbers = ["{{ options.product_whatsapp_commercial_number_1 }}", "{{ options.product_whatsapp_commercial_number_2 }}"];
           var phoneNumbers = ["{{ options.product_phone_commercial_number_1 }}", "{{ options.product_phone_commercial_number_2 }}"];
+          var trackingClasses = ["category-comercial-asesor-1", "category-comercial-asesor-2"];
 
           if (document.getElementById("whatsapp-link") && document.getElementById("phone-link")) {
             document.getElementById("whatsapp-link").href = "https://api.whatsapp.com/send?phone=" + whatsappNumbers[asesorSeleccionado] + "&text={{ 'Hola, me gustaría comprar el siguiente producto: ' | t }} {{ product.name }} | {{ store.base_url }}{{ product.url }}";
             document.getElementById("phone-link").href = "tel:" + phoneNumbers[asesorSeleccionado];
             document.getElementById("phone-text").innerHTML = "Llamar " + phoneNumbers[asesorSeleccionado];
+
+            document.getElementById("whatsapp-link").classList.add(trackingClasses[asesorSeleccionado]);
+            document.getElementById("phone-link").classList.add(trackingClasses[asesorSeleccionado]);
           }
         } catch (error) {
           console.error("Error ejecutando JavaScript: ", error);
@@ -47,10 +54,17 @@
     </script>
 
     <div class="product-btn-comprar-what">
-      <a id="whatsapp-link" href="#" target="_black">{{ button_text }} <i class="fab fa-whatsapp"></i></a>
+      <a id="whatsapp-link"
+         class="track-whatsapp category-comercial"
+         href="#" 
+         target="_black">{{ button_text }} <i class="fab fa-whatsapp"></i>
+      </a>
     </div>
     <div class="product-btn-comprar-tel">
-      <a id="phone-link" href="#"><i class="fas fa-phone"></i> <span id="phone-text">Llamar</span></a>
+      <a id="phone-link"
+         class="track-phone category-comercial"
+         href="#"><i class="fas fa-phone"></i> <span id="phone-text">Llamar</span>
+      </a>
     </div>
 
     {% break %}
@@ -64,6 +78,7 @@
       {% assign phone_key = "product_phone_number_" | append: i %}
       {% assign whatsapp_data = options[whatsapp_key] | append: "," | append: options[phone_key] %}
       {% assign category_matched = true %}
+      {% assign tracking_class = "category-" | append: category_permalink | replace: ' ', '-' %}
       {% break %}
     {% endif %}
   {% endfor %}
@@ -80,9 +95,16 @@
 {% if whatsapp_data != "" %}
   {% assign whatsapp_details = whatsapp_data | split: "," %}
   <div class="product-btn-comprar-what">
-    <a href="https://api.whatsapp.com/send?phone={{ whatsapp_details[0] }}&text={% t 'Hola, me gustaría comprar el siguiente producto: ' %} {{ product.name }} | {{ store.base_url }}{{ product.url }}" target="_blank">{{ button_text }} <i class="fab fa-whatsapp"></i></a>
+    <a class="track-whatsapp {{ tracking_class }}"
+       href="https://api.whatsapp.com/send?phone={{ whatsapp_details[0] }}&text={% t 'Hola, me gustaría comprar el siguiente producto: ' %} {{ product.name }} | {{ store.base_url }}{{ product.url }}" 
+       target="_blank">
+      {{ button_text }} <i class="fab fa-whatsapp"></i>
+    </a>
   </div>
   <div class="product-btn-comprar-tel">
-    <a href="tel:{{ whatsapp_details[1] }}"><i class="fas fa-phone"></i> Llamar {{ whatsapp_details[1] }}</a>
+    <a class="track-phone {{ tracking_class }}"
+       href="tel:{{ whatsapp_details[1] }}">
+      <i class="fas fa-phone"></i> Llamar {{ whatsapp_details[1] }}
+    </a>
   </div>
 {% endif %}
