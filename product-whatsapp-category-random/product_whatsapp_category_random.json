@@ -1,0 +1,97 @@
+{
+ "Chats": {
+    "icon": "phone",
+    "options": {
+      "whatsapp_categoria_heading": {
+        "name": "Configuración: WhatsApp por Categoría",
+        "type": "heading",
+        "default": true
+      },
+      "product_whatsapp_priority_category": {
+        "name": "Categoría Prioritaria",
+        "type": "category"
+      },
+      "product_whatsapp_priority_number": {
+        "name": "Número WhatsApp Categoría Prioritaria",
+        "type": "input",
+        "default": "573104265599"
+      },
+      "product_phone_priority_number": {
+        "name": "Número Teléfono Categoría Prioritaria",
+        "type": "input",
+        "default": "3104265599"
+      },
+      "product_whatsapp_priority_text": {
+        "name": "Texto del botón para Categoría Prioritaria",
+        "type": "input",
+        "default": "Solicitar presupuesto por WhatsApp"
+      },
+      "product_whatsapp_commercial_category": {
+        "name": "Categoría Comercial (Asesores Compartidos)",
+        "type": "category"
+      },
+      "product_whatsapp_commercial_number_1": {
+        "name": "Número WhatsApp Asesor 1",
+        "type": "input",
+        "default": "573028301499"
+      },
+      "product_phone_commercial_number_1": {
+        "name": "Número Teléfono Asesor 1",
+        "type": "input",
+        "default": "3028301499"
+      },
+      "product_whatsapp_commercial_number_2": {
+        "name": "Número WhatsApp Asesor 2",
+        "type": "input",
+        "default": "573107779621"
+      },
+      "product_phone_commercial_number_2": {
+        "name": "Número Teléfono Asesor 2",
+        "type": "input",
+        "default": "3107779621"
+      },
+      "product_whatsapp_category_1": {
+        "name": "Categoría 1",
+        "type": "category"
+      },
+      "product_whatsapp_number_1": {
+        "name": "Número WhatsApp Categoría 1",
+        "type": "input",
+        "default": "573027147696"
+      },
+      "product_phone_number_1": {
+        "name": "Número Teléfono Categoría 1",
+        "type": "input",
+        "default": "3027147696"
+      },
+      "product_whatsapp_category_2": {
+        "name": "Categoría 2",
+        "type": "category"
+      },
+      "product_whatsapp_number_2": {
+        "name": "Número WhatsApp Categoría 2",
+        "type": "input",
+        "default": "573239815754"
+      },
+      "product_phone_number_2": {
+        "name": "Número Teléfono Categoría 2",
+        "type": "input",
+        "default": "3239815754"
+      },
+      "product_whatsapp_category_3": {
+        "name": "Categoría 3",
+        "type": "category"
+      },
+      "product_whatsapp_number_3": {
+        "name": "Número WhatsApp Categoría 3",
+        "type": "input",
+        "default": "573113326598"
+      },
+      "product_phone_number_3": {
+        "name": "Número Teléfono Categoría 3",
+        "type": "input",
+        "default": "3113326598"
+      }
+    }
+  }
+}
