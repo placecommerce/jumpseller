@@ -50,6 +50,11 @@
         "type": "input",
         "default": "3107779621"
       },
+     "product_whatsapp_categories_count": {
+        "name": "Nùmero de categorías asignadas",
+        "type": "input",
+        "default": "3"
+      },
       "product_whatsapp_category_1": {
         "name": "Categoría 1",
         "type": "category"
