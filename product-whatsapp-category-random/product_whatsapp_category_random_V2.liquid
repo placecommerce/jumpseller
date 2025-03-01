@@ -1,0 +1,152 @@
+{% assign whatsapp_data = "" %}
+{% assign button_text = "Comprar por WhatsApp" %}
+{% assign category_matched = false %}
+{% assign tracking_class = "category-default" %}
+
+<!-- Debug: Cantidad de categorías configuradas 
+{% assign category_count = options.product_whatsapp_categories_count | plus: 0 %}
+<p>DEBUG: Número total de categorías configuradas: {{ category_count }}</p>-->
+
+{% for product_category in product.categories %}
+  {% assign category_permalink = product_category.permalink %}
+
+  <!-- Debug: Mostrar cada categoría del producto 
+  <p>DEBUG: Evaluando categoría del producto: {{ category_permalink }}</p> -->
+
+  {% if category_permalink == options.product_whatsapp_priority_category %}
+    {% assign whatsapp_data = options.product_whatsapp_priority_number | append: "," | append: options.product_phone_priority_number %}
+    {% assign button_text = options.product_whatsapp_priority_text %}
+    {% assign category_matched = true %}
+    {% assign tracking_class = "category-prioritaria" %}
+    
+    <!-- <p>DEBUG: Se asignó WhatsApp de la categoría prioritaria: {{ whatsapp_data }}</p> -->
+    
+    {% break %}
+  {% endif %}
+
+  {% if category_permalink == options.product_whatsapp_commercial_category %}
+    {% assign category_matched = true %}
+    {% assign tracking_class = "category-comercial" %}
+
+    <!--<p>DEBUG: Se asignó WhatsApp de la categoría comercial</p>-->
+
+    <!-- Renderizar los botones antes del break -->
+    <div class="product-btn-comprar-what">
+        <a class="track-whatsapp whatsapp-link {{ tracking_class }}"
+          data-product-name="{{ product.name }}"
+          data-product-url="{{ product.url }}"
+          href="#" 
+          target="_blank">
+          {{ button_text }} <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+    <div class="product-btn-comprar-tel">
+        <a class="track-phone phone-link {{ tracking_class }}" href="#">
+          <i class="fas fa-phone"></i> <span class="phone-text">Llamar</span>
+        </a>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          try {
+              let asesores = ["{{ options.product_whatsapp_commercial_number_1 }}", "{{ options.product_whatsapp_commercial_number_2 }}"];
+              let telefonos = ["{{ options.product_phone_commercial_number_1 }}", "{{ options.product_phone_commercial_number_2 }}"];
+
+              function isLocalStorageAvailable() {
+                  try {
+                      let test = "__storage_test__";
+                      localStorage.setItem(test, test);
+                      localStorage.removeItem(test);
+                      return true;
+                  } catch (e) {
+                      return false;
+                  }
+              }
+
+              let asesorSeleccionado = isLocalStorageAvailable() ? localStorage.getItem("asesor_comercial") : null;
+
+              if (!asesorSeleccionado || isNaN(parseInt(asesorSeleccionado))) {
+                  asesorSeleccionado = Math.floor(Math.random() * asesores.length);
+                  if (isLocalStorageAvailable()) {
+                      try {
+                          localStorage.setItem("asesor_comercial", asesorSeleccionado);
+                      } catch (e) {
+                          if (e.name === "QuotaExceededError") {
+                              console.warn("localStorage está lleno. No se pudo guardar.");
+                          }
+                      }
+                  }
+              } else {
+                  asesorSeleccionado = parseInt(asesorSeleccionado);
+              }
+
+              document.querySelectorAll(".whatsapp-link").forEach(function(element) {
+                  element.href = "https://api.whatsapp.com/send?phone=" + asesores[asesorSeleccionado] + "&text={{ 'Hola, me gustaría comprar el siguiente producto: ' | t }} " + element.dataset.productName + " | {{ store.base_url }}" + element.dataset.productUrl;
+              });
+
+              document.querySelectorAll(".phone-link").forEach(function(element) {
+                  element.href = "tel:" + telefonos[asesorSeleccionado];
+              });
+
+              document.querySelectorAll(".phone-text").forEach(function(element) {
+                  element.innerHTML = "Llamar " + telefonos[asesorSeleccionado];
+              });
+
+              console.log("DEBUG: Asesor seleccionado aleatoriamente:", asesorSeleccionado);
+          } catch (error) {
+              console.error("Error ejecutando JavaScript:", error);
+          }
+      });
+
+    </script>
+
+    {% break %}
+  {% endif %}
+
+  {% for i in (1..category_count) %}
+    {% capture category_key %}product_whatsapp_category_{{ i }}{% endcapture %}
+    {% capture whatsapp_key %}product_whatsapp_number_{{ i }}{% endcapture %}
+    {% capture phone_key %}product_phone_number_{{ i }}{% endcapture %}
+
+    {% assign category_value = options[category_key] %}
+    {% assign whatsapp_value = options[whatsapp_key] %}
+    {% assign phone_value = options[phone_key] %}
+
+    <!--<p>DEBUG: Evaluando categoría asignada {{ i }} -> {{ category_value }}</p>-->
+
+    {% if category_permalink == category_value %}
+      {% assign whatsapp_data = whatsapp_value | append: "," | append: phone_value %}
+      {% assign category_matched = true %}
+      {% assign tracking_class = "category-" | append: category_value | replace: ' ', '-' %}
+
+      <!--<p>DEBUG: Se asignó WhatsApp para categoría {{ i }}: {{ whatsapp_data }}</p>-->
+      
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endfor %}
+
+{% unless category_matched %}
+  {% assign whatsapp_data = options.product_whatsapp_commercial_number_1 | append: "," | append: options.product_phone_commercial_number_1 %}
+  {% assign tracking_class = "category-comercial" %}
+  
+  <!--<p>DEBUG: No se encontró categoría, usando fallback comercial: {{ whatsapp_data }}</p>-->
+{% endunless %}
+
+{% if whatsapp_data != "" %}
+  {% assign whatsapp_details = whatsapp_data | split: "," %}
+  <div class="product-btn-comprar-what">
+    <a class="track-whatsapp {{ tracking_class }}"
+       href="https://api.whatsapp.com/send?phone={{ whatsapp_details[0] }}&text={% t 'Hola, me gustaría comprar el siguiente producto: ' %} {{ product.name }} | {{ store.base_url }}{{ product.url }}" 
+       target="_blank">
+      {{ button_text }} <i class="fab fa-whatsapp"></i>
+    </a>
+  </div>
+  <div class="product-btn-comprar-tel">
+    <a class="track-phone {{ tracking_class }}"
+       href="tel:{{ whatsapp_details[1] }}">
+      <i class="fas fa-phone"></i> Llamar {{ whatsapp_details[1] }}
+    </a>
+  </div>
+{% endif %}
